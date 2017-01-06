@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import string
 
+
 def get_words_of_length(n):
     with open("ospd.txt") as f:
         word_list = f.read().split()
@@ -19,7 +20,6 @@ def jotto_score(solution, guess):
         if s == g:
             num_right_place += 1
     # number letters right (including in wrong place)
-    # SLOWER: num_right_letter = sum((Counter(solution) & Counter(guess)).values())
     num_right_letter = 0
     for letter in set(solution):
         num_right_letter += min(
@@ -56,7 +56,7 @@ def play(legal_words, solution, strategy):
 
 def compete(strategies, num_games=1_000):
     legal_words = get_words_of_length(5)
-    wins = {s.__name__:0 for s in strategies}
+    wins = {s.__name__: 0 for s in strategies}
     for ii in range(num_games):
         solution = random.choice(legal_words)
         guesses = []
@@ -111,7 +111,8 @@ def guess_sampled_minimax(game, legal_words):
         # letter correct plus 1 more for those in the right spot
         data = np.array([[list(x) for x in test_words]])
         right_place = (data == data.transpose((1, 0, 2))).sum(2)
-        data = np.array([[[word.count(letter) for letter in string.ascii_lowercase] for word in test_words]])
+        data = np.array([[[word.count(letter) for letter in
+                         string.ascii_lowercase] for word in test_words]])
         right_letter = (np.minimum(data, data.transpose((1, 0, 2)))).sum(2)
         score = right_place + right_letter
         # Select the word with the maximum lowest possible score
@@ -152,3 +153,17 @@ def guess_minimax(game, legal_words):
             if jotto_score(word, guess) != score:
                 possible_solutions.remove(word)
     return round_num, guess
+
+
+if __name__ == "__main__":
+    from operator import itemgetter
+    strategies = [
+                  guess_first,
+                  guess_random,
+                  guess_sampled_minimax,
+                 ]
+    results = compete(strategies, num_games=30)
+    results = sorted(results.items(), key=itemgetter(1), reverse=True)
+    for strat, wins in results:
+        s = "s" if wins != 1 else None
+        print(f"{strat} won {wins:,.0f} time" + s)
