@@ -1,8 +1,10 @@
 language: python
 python:
-  - "3.6"
-# command to install dependencies
+    - "3.6"
+    - "pypy3-9.0.1"
+install:
+    - "pip3 install -r requirements.txt"
 script: python jotto.py
 branches:
-  only:
-    - master
+    only:
+        - master
