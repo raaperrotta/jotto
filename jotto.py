@@ -161,8 +161,9 @@ if __name__ == "__main__":
                   guess_first,
                   guess_random,
                   guess_sampled_minimax,
+                  guess_minimax,
                  ]
-    results = compete(strategies, num_games=30)
+    results = compete(strategies, num_games=100)
     results = sorted(results.items(), key=itemgetter(1), reverse=True)
     for strat, wins in results:
         s = "s" if wins != 1 else None
